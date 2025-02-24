@@ -9,20 +9,25 @@ const int TICKET_SIZE = 5;
 void print_ticket(std::vector<int>& my_ticket);
 bool ball_existed(std::vector<int>& my_ticket, int tmp, bool verbose);
 std::vector<int> ticket_gen();
-double result_check(std::vector<int>& result, std::vector<int>& ticket);
+int result_check(std::vector<int>& result, std::vector<int>& ticket);
 
 int main() {
+    int winnings;
+
     std::vector<int> my_ticket = ticket_gen();
+    std::cout << "Your ticket:         ";
+    print_ticket(my_ticket);
+    std::cout << std::endl;
 
     std::vector<int> result = ticket_gen();
-    print_ticket(my_ticket);
-
+    std::cout << "The winning numbers: ";
     print_ticket(result);
+    std::cout<< std::endl;
 
-    double my_win = result_check(result, my_ticket);
+    winnings = result_check(result, my_ticket);
 
-    if(my_win > 0){
-        std::cout << "You won: " << my_win;
+    if(winnings > 0){
+        std::cout << "You won: " << winnings;
     } else {
         std::cout << "Try again. Sorry";
     }
@@ -31,9 +36,13 @@ int main() {
 }
 
 void print_ticket(std::vector<int>& my_ticket){
-    std::cout << "Your ticket has these numbers!!!\n";
+    //std::cout << "Your ticket has these numbers!!!\n";
     for(int i = 0; i < my_ticket.size(); i++){
-        std::cout << "[" << my_ticket[i] << "] ";
+        std::cout << "[";
+        if(my_ticket[i] < 10){
+            std::cout << "0";
+        }
+        std::cout << my_ticket[i] << "] ";
     }
     std::cout << std::endl;
 }
@@ -67,44 +76,45 @@ std::vector<int> ticket_gen() {
     int tmp;
     int lower_bound = 1, upper_bound = 69;
     bool isFound;
-    std::vector<int> my_ticket;
+    std::vector<int> newTicket; //brand-new ticket!!!
     
     // the generator ===> generator algorithm + distribution definition
-    std::mt19937 random_generator_one_number_at_a_time(std::time(0)); // current time since 1970/1/1
-    
-    // the data distribution that we will accept
-    std::uniform_int_distribution<> white_ball(1, 69);
+    std::random_device rd;  // a seed source for the random number engine, better than time(0)
+    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<> white_ball(lower_bound, upper_bound);  //use the vars
     
     // technically for/while loops are compiled down to the same code, but the convention 
     // you will see most often for seeding a set of number or values will have a for-loop
     // you need to learn how to use a while-loop so I suppose this is fine, but in real life
     // this would be /weird/
-    while(my_ticket.size() < 5) {
-        tmp = white_ball(random_generator_one_number_at_a_time);
+    while(newTicket.size() < 5) {
+        tmp = white_ball(gen);
     
         // changed the var declaration to up top and made the var readable
-        isFound = ball_existed(my_ticket, tmp, false);  // note if you change this to "true" in the function you will get more output
+        isFound = ball_existed(newTicket, tmp, false);  // note if you change this to "true" in the function you will get more output
     
         while (isFound) { // if number exists, try to generate another number;
-            tmp = white_ball(random_generator_one_number_at_a_time);
-            isFound = ball_existed(my_ticket, tmp, false);
+            tmp = white_ball(gen);
+            isFound = ball_existed(newTicket, tmp, false);
         }
     
         // this means, after the while, the number is new for real
-        my_ticket.push_back(tmp);
+        newTicket.push_back(tmp);
     }
-    sort(my_ticket.begin(), my_ticket.end());
-
-    return my_ticket;
+    sort(newTicket.begin(), newTicket.end());
+    
+    return newTicket;
 }
     
-double result_check(std::vector<int>& result, std::vector<int>& ticket){ // sorted only
+int result_check(std::vector<int>& result, std::vector<int>& ticket){ // sorted only
     int match_white_ball_count = 0;
     
-    for (int i = 0; i < ticket.size(); i++){    //note the for-loop is not an iterator, because we need the side-effect
-        if (result[i] == ticket[i]){
-            match_white_ball_count += 1;
-        }
+    for (int i = 0; i < result.size(); i++){    //note the for-loop is not an iterator, because we need the side-effect
+        for(int j = 0; j < ticket.size(); j++){
+            if (result[i] == ticket[j]){
+              match_white_ball_count += 1;
+            }
+        } //prior version scanned both indices in lockstep, which is not correct
     }
 
     /* we're going to do a case-switch below to show how that does if else
@@ -120,20 +130,17 @@ double result_check(std::vector<int>& result, std::vector<int>& ticket){ // sort
     */
     
     switch(match_white_ball_count){    //switch(var) means test this variable against one or more cases
-        case 5: return 1000000.0;     //honestly we should return strings but let it go
+        case 5: return 1000000;     //honestly we should return strings but let it go
             break;
-        case 4: return 50000.0;
+        case 4: return 50000;
             break;
         case 3: //fall through
         case 2: //fall through
-        case 1: return (1.0*match_white_ball_count);    //a little trick to return a double
+        case 1: return match_white_ball_count;    //a little trick to return a double
             break;  // shuldn't reach this because we have a return
-        case 0: return 0.0;
+        case 0: return 0;
             break;
-        default: return -1.0; //we are trapping a count value that isn't an integer between 0 and 5.
+        default: return -1; //we are trapping a count value that isn't an integer between 0 and 5.
             break;
     }
 }
-    
-    
-    
