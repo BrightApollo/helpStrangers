@@ -4,14 +4,14 @@ This program will flesh out the conflict detection we need for dates
 Start date 2025-01-01 12:00 AM
 Finish date 2025-05-31 11:59 PM
 
-Concert A is on 2024-12-31 from 1800 –  2025-01-01-0400
+Concert A is on 2024-12-31 from 1800 ï¿½  2025-01-01-0400
 Concert B is on 2025-05-31 from 1800 to 2025-06-01 0400
 Concert C is on 2024-12-30 from 1800 to 2025-07-01 0000
 
-202501010000 – 202505312359
+202501010000 ï¿½ 202505312359
 
 The start date has to be between these, OR, the end date has to be between these to detect a CONFLICT
-Let’s breakdown BETWEENness
+Letï¿½s breakdown BETWEENness
 testStart >= start && testStart <= end  (BETWEEN)
  OR
 testEnd >= start && testEnd <= end (BETWEEN)
@@ -38,6 +38,10 @@ dateStuff getUserDate();
 void showUserDate(dateStuff inDate);
 void testForConflict(dateStuff inStart, dateStuff inEnd, dateStuff
 startTryer, dateStuff endTryer);
+std::string monFmt(int i);
+std::string dayFmt(int i);
+std::string hrFmt(int i);
+std::string minFmt(int i);
 
 int main(){
 
@@ -55,6 +59,13 @@ int main(){
     std::cout << "Now enter the end date and time probe.\n";
     endtryDt = getUserDate();
 
+    std::cout << "Using the start time: ";
+    showUserDate(starttryDt);
+    
+    std::cout << "And the end time: ";
+    showUserDate(endtryDt);
+    std::cout << "\n";
+    
     testForConflict(startDt, endDt, starttryDt, endtryDt);
 
     return 0;
@@ -63,12 +74,30 @@ int main(){
 dateStuff getUserDate(){
 
     dateStuff inDate;
+    int i {};
 
-    std::cout << "Year? "; std::cin >> inDate.yr; inDate.wholeDt = inDate.yr;
-    std::cout << "Month? "; std::cin >> inDate.mon; inDate.wholeDt += inDate.mon;
-    std::cout << "Day? "; std::cin >> inDate.day; inDate.wholeDt += inDate.day;
-    std::cout << "Hour? "; std::cin >> inDate.hr; inDate.wholeDt += inDate.hr;
-    std::cout << "Minutes? "; std::cin >> inDate.min; inDate.wholeDt +=inDate.min;
+    std::cout << "Year? "; 
+        std::cin >> inDate.yr; 
+        inDate.wholeDt = inDate.yr; //4-dgit year guarantees string because I say so
+    std::cout << "Month? "; 
+        std::cin >> i;
+        inDate.mon = monFmt(i);
+        inDate.wholeDt += inDate.mon; 
+        i = 0;
+    std::cout << "Day? ";
+        std::cin >> i; 
+        inDate.mon = dayFmt(i);
+        inDate.wholeDt += inDate.day;
+        i = 0;
+    std::cout << "Hour? ";
+        std::cin >> i;
+        inDate.hr = hrFmt(i);
+        inDate.wholeDt += inDate.hr;
+        i = 0;
+    std::cout << "Minutes? ";
+        std::cin >> i;
+        inDate.min = minFmt(i);
+        inDate.wholeDt +=inDate.min;
 
     return inDate;
 }
@@ -78,7 +107,7 @@ void showUserDate(dateStuff inDate){
     std::cout << inDate.mon << "-";
     std::cout << inDate.day << " ";
     std::cout << inDate.hr << ":";
-    std::cout << inDate.min << "\n";
+    std::cout << inDate.min << "  /  ";
     std::cout << inDate.wholeDt << "\n";
 }
 //check this at tryer
@@ -92,4 +121,65 @@ void testForConflict(dateStuff inStart, dateStuff inEnd, dateStuff startTryer, d
 	} else {
         std::cout << "Your trial is not in the window.";
     }
+}
+
+std::string monFmt(int i) {
+    std::string outStr{};
+    while((i < 1) || (i > 12)) {
+        std::cout << "Integer out of accepted month range.  Enter a new value: ";
+        std::cin >> i;
+    }
+
+    if(i < 10) {
+        outStr = "0" + std::to_string(i);
+    } else {
+        outStr = std::to_string(i);
+    }
+    return outStr;
+}
+
+std::string dayFmt(int i) {
+    std::string outStr{};
+    while((i < 1) || (i > 31)) {
+        std::cout << "Integer out of accepted day range.  Enter a new value: ";
+        std::cin >> i;
+    }
+    
+    if(i < 10) {
+        outStr = "0" + std::to_string(i);
+    } else {
+        outStr = std::to_string(i);
+    }
+    return outStr;
+}
+
+std::string hrFmt(int i){
+    std::string outStr{};
+    if((i < 0) || (i > 23)) {
+        std::cout << "Integer out of accepted hour range.  Enter a new value: ";
+        std::cin >> i;
+    }
+    
+    if(i < 10) {
+        outStr = "0" + std::to_string(i);
+    } else {
+        outStr = std::to_string(i);
+    }
+    return outStr;
+}
+
+std::string minFmt(int i){
+    std::string outStr{};
+    if((i < 0) || (i > 59)) {
+        std::cout << "Integer out of accepted minute range.  Enter a new value: ";
+        std::cin >> i;
+    }
+    
+    if(i < 10) {
+        outStr = "0" + std::to_string(i);
+    } else {
+        outStr = std::to_string(i);
+    }
+    return outStr;
+
 }
