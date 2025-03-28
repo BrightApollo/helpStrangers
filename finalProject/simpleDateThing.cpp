@@ -85,17 +85,11 @@ void showUserDate(dateStuff inDate){
 void testForConflict(dateStuff inStart, dateStuff inEnd, dateStuff startTryer, dateStuff endTryer){
     if(inStart.wholeDt > inEnd.wholeDt){
         std::cout << "This is not right, end dates need to be after start dates." << std::endl;
-    } else if ((startTryer.wholeDt >= inStart.wholeDt) && (startTryer.wholeDt <= inEnd.wholeDt)) {
-    	std::cout << "Your trial IS in conflict with the dates!" << std::endl;
-    } else if ((endTryer.wholeDt >= inStart.wholeDt) && (endTryer.wholeDt <= inEnd.wholeDt)) {
-		std::cout << "Your trial IS in conflict with the dates!" << std::endl;
-	} else if ((startTryer.wholeDt <= inStart.wholeDt) && (endTryer.wholeDt >= inEnd.wholeDt)){
+    } else if (((startTryer.wholeDt >= inStart.wholeDt) && (startTryer.wholeDt <= inEnd.wholeDt)) ||
+    	 ((endTryer.wholeDt >= inStart.wholeDt) && (endTryer.wholeDt <= inEnd.wholeDt)) ||
+		 ((startTryer.wholeDt <= inStart.wholeDt) && (endTryer.wholeDt >= inEnd.wholeDt)) ) {
 		std::cout << "Your trial IS in conflict with the dates!" << std::endl;
 	} else {
         std::cout << "Your trial is not in the window.";
     }
 }
-/*
-
-
-*/
